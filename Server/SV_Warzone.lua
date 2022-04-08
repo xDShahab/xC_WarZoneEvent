@@ -1,7 +1,7 @@
 ESX = nil 
 TriggerEvent('esx:xCooreShared', function(obj) ESX = obj end)
 
-local PermStart = 10 -- // Permmision For Start Warzone
+local PermStart = 10 -- // Permmision For Start Warzone 
 local Permend =10 -- // Permmision For End Warzone
 local WarZoneWorld = 90 -- // World WarZone Event
 
