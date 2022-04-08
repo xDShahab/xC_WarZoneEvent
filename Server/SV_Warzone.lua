@@ -1,35 +1,38 @@
 ESX = nil 
 TriggerEvent('esx:xCooreShared', function(obj) ESX = obj end)
-local PermStart = 10 -- // Perm Start Wz
-local Permend =10 -- // Perm End Wz
-local WarZoneWorld = 90 -- // World Wz
+
+local PermStart = 10 -- // Permmision For Start Warzone
+local Permend =10 -- // Permmision For End Warzone
+local WarZoneWorld = 90 -- // World WarZone Event
+
 local Lobbey = false 
 local WorldLob = 89
 local AllPlayerInWz = 0
-local WarZone = { -- Neyazi be Edit Inja Nist Serfan Jahat Amoozesh
-    Start = false , --> Start Warozne true = Yes
-    Health = 0 , --> Teadad Jon Player 
-    Distance = 0.0 , --> Andaze Zone Warzone
-    Coords = vector3(-1266.35,-3010.98,-48.0) , --> Mokhtsat Warzone
-    Time = 0, --> Zaman Baste Shodan Har Zone min
+
+local WarZone = { 
+    Start = false ,
+    Health = 0 , 
+    Distance = 0.0 ,
+    Coords = vector3(-1266.35,-3010.98,-48.0) ,
+    Time = 0,
 }
 
 RegisterCommand("swarzone",function(source,args)
     local xPlayer = ESX.GetPlayerFromId(source)
     if WarZone.Start == true then return
-        TriggerClientEvent('esx:showNotification', source, "~r~Dar Hale Hazer Yek Match WarZone Start Hast")
+        TriggerClientEvent('esx:showNotification', source, "~r~A Warzone Event Has Already Started")
     end 
     if Lobbey then return 
-        TriggerClientEvent('esx:showNotification', source, "~r~Dar Hale Hazer Yek Lobby WarZone Baz Hast") 
+        TriggerClientEvent('esx:showNotification', source, "~r~A Warzone Lobby Has Already Started") 
     end
     if xPlayer.permission_level >= PermStart  then 
         Lobbey = true 
         TriggerClientEvent('chat:addMessage',  xPlayer.source, {
             template = '<div style="padding: 1vw;background: linear-gradient(-90deg,#0060ff, #0000ff);border-radius: 20px;box-shadow: 0 0 10px #0060ff;max-width: 730px;"><span style="display:block; margin-bottom:20px"><span style="padding:7px;border-radius:10px;"><i class="fa fa-bullhorn"></i></span> <b>WarZone</b></span>{0}</div>',
-            args = { "Event WarZone Start Shod Jahat Vorud Be Event Warzon ^4/joinwz^0 Ra Bezanid " }
+            args = { "WarZone Event Started Please Type ^1/joinwz ^0 For Join To The Lobby" }
         })
     else
-        TriggerClientEvent('esx:showNotification', source, '~r~Shoma Dastresi Kafi Barai In Kar Nadarid')   
+        TriggerClientEvent('esx:showNotification', source, '~r~You Dont Have Permmision For Use This Command')   
     end
 end)
 
@@ -40,7 +43,7 @@ RegisterCommand("joinwz",function(source,args)
         Lobbey = true 
         TriggerClientEvent('chat:addMessage',  xPlayer.source, {
 	    	template = '<div style="padding: 1vw;background: linear-gradient(-90deg,#24b300, #349426);border-radius: 20px;box-shadow: 0 0 10px #24b300;max-width: 730px;"><span style="display:block; margin-bottom:20px"><span style="padding:7px;border-radius:10px;"><i class="fa fa-bullhorn"></i></span> <b>WarZone</b></span>{0}</div>',
-            args = { "Shoma Join Event WarZone Dadid Lotfan Ta Start Shodan Event Montazer Bemanid " }
+            args = { "You Joined To The WarZone Event Please Wait For More Players" }
         })
         SetPlayerRoutingBucket(source,WorldLob)
         TriggerClientEvent("WarZone:JoinLobbery",source)
@@ -48,7 +51,7 @@ RegisterCommand("joinwz",function(source,args)
     else 
         TriggerClientEvent('chat:addMessage',  xPlayer.source, {
             template = '<div style="padding: 1vw;background: linear-gradient(-90deg,#d81c1f, #8b2525);border-radius: 20px;box-shadow: 0 0 10px #d81c1f;max-width: 730px;"><span style="display:block; margin-bottom:20px"><span style="padding:7px;border-radius:10px;"><i class="fa fa-bullhorn"></i></span> <b>WarZone</b></span>{0}</div>',
-            args = { "Lobby WarZone Baste Shoda Va Nmitavanid Join Bedid" }
+            args = { "WarZone Lobby Closed" }
         }) 
     end
 end)
@@ -60,7 +63,7 @@ RegisterCommand("clwz",function(source,args)
     if xPlayer.permission_level >= Permend  then 
         TriggerClientEvent('chat:addMessage',  xPlayer.source, {
             template = '<div style="padding: 1vw;background: linear-gradient(-90deg,#d81c1f, #8b2525);border-radius: 20px;box-shadow: 0 0 10px #d81c1f;max-width: 730px;"><span style="display:block; margin-bottom:20px"><span style="padding:7px;border-radius:10px;"><i class="fa fa-bullhorn"></i></span> <b>WarZone</b></span>{0}</div>',
-            args = { "Lobby WarZone Baste Shoda !" }
+            args = { "WarZone Lobby Closed !" }
         }) 
         local xPlayers = ESX.GetPlayers()
         for k, v in pairs (xPlayers) do 
@@ -78,27 +81,26 @@ RegisterCommand("clwz",function(source,args)
         Wait(710)
         Lobbey = false 
     else 
-        TriggerClientEvent('esx:showNotification', source, '~r~Shoma Dastresi Kafi Barai In Kar Nadarid')   
+        TriggerClientEvent('esx:showNotification', source, '~r~You Dont Have Permmision For Use This Command')   
     end
 end)
-
 
 RegisterCommand("cwz",function(source,args)
     local xPlayer = ESX.GetPlayerFromId(source)
     local Players = 0 
     if Lobbey == false then return  
-        TriggerClientEvent('esx:showNotification', source, "~r~  Lobbery WarZone Start Nist  ") 
+        TriggerClientEvent('esx:showNotification', source, "~r~No Events Started") 
     end 
     if WarZone.Start == true  then return  
-        TriggerClientEvent('esx:showNotification', source, "~r~  WarZone Starte ") 
+        TriggerClientEvent('esx:showNotification', source, "~r~WarZone Event Already Started") 
     end 
     if xPlayer.permission_level >= PermStart  then 
         if tonumber(args[1]) and tonumber(args[2])  and tonumber(args[3])  then   
             if  tonumber(args[2]) > 2000 then return
-                TriggerClientEvent('esx:showNotification', source, "~r~ Andaze Zone Besyar Bozorg Ast ") 
+                TriggerClientEvent('esx:showNotification', source, "~r~The Amount Entered Is Too Large") 
             end  
             if  tonumber(args[2]) < 500 then return  
-                TriggerClientEvent('esx:showNotification', source, "~r~ Andaze Zone Besyar Kochick Ast ") 
+                TriggerClientEvent('esx:showNotification', source, "~r~The Amount Entered Is Too Small") 
             end 
             Lobbey = false 
             WarZone = {
@@ -116,17 +118,17 @@ RegisterCommand("cwz",function(source,args)
                 })
                 Wait(710)
         else
-            TriggerClientEvent('esx:showNotification', source, "~r~Gozine Vared Shode Eshtebah Ast")
+            TriggerClientEvent('esx:showNotification', source, "~r~The Entered Option Is Incorrect")
         end 
     else
-        TriggerClientEvent('esx:showNotification', source, '~r~Shoma Dastresi Kafi Barai In Kar Nadarid')   
+        TriggerClientEvent('esx:showNotification', source, '~r~You Dont Have Permmision For Use This Command')   
     end
 end)
 
 RegisterCommand("endwz",function(source,args)
     local xPlayer = ESX.GetPlayerFromId(source)
     if WarZone.Start == false then return  
-        TriggerClientEvent('esx:showNotification', source, "~r~  WarZone Start Nist ") 
+        TriggerClientEvent('esx:showNotification', source, "~r~No Events Started") 
     end 
     if xPlayer.permission_level >= Permend then 
         WarZone = {
@@ -146,18 +148,18 @@ RegisterCommand("endwz",function(source,args)
             end 
         end 
     else
-        TriggerClientEvent('esx:showNotification', source, '~r~Shoma Dastresi Kafi Barai In Kar Nadarid')   
+        TriggerClientEvent('esx:showNotification', source, '~r~You Dont Have Permmision For Use This Command')   
     end
 end)
 
 RegisterCommand("exitwz",function(source,args)
     local xPlayer = ESX.GetPlayerFromId(source)
     if WarZone.Start == false then return
-        TriggerClientEvent('esx:showNotification', source, "~r~Hich Event WarZonei Start Nist ") 
+        TriggerClientEvent('esx:showNotification', source, "~r~No Events Started") 
     end 
     if GetPlayerRoutingBucket(source) == 90 then 
         TriggerClientEvent("WarZone:ExitMision",source)
-        TriggerClientEvent('esx:showNotification', source, '~g~Shoma Az Event WarZone Kharej Shodid')
+        TriggerClientEvent('esx:showNotification', source, '~g~You Exited From WarZone Event')
     end 
 end)
 
@@ -177,26 +179,6 @@ AddEventHandler('playerDropped', function ()
     if WarZone.Start ~= true  and GetPlayerRoutingBucket(source) == WarZoneWorld  then 
         TriggerClientEvent("WarZone:DC",source)
     end     
-end)
-
-RegisterServerEvent("esx:onPlayerDeath")
-AddEventHandler("esx:onPlayerDeath", function(KillData)
-    if WarZone.Start ~= true then return   end 
-    if GetPlayerRoutingBucket(source) ~= WarZoneWorld  then return end 
-     TriggerClientEvent("WarZone:respwan",source,false)
-    local xPlayers = ESX.GetPlayers()
-    for k, v in pairs (xPlayers) do 
-        if GetPlayerRoutingBucket(v) == WarZoneWorld then
-            if  tonumber(KillData.killer)  then 
-                TriggerClientEvent("WarZone:respwan",KillData.killer,true)
-                TriggerClientEvent("xC_KillFeed",v, GetPlayerName(KillData.killer), GetPlayerName(source), string.upper(string.lower(ESX.Math.Trim(string.gsub("WEAPON_"..KillData.deathCause, " ", "")))), true, "pvp")
-                ESX.GetPlayerFromId(KillData.killer).addMoney(1000)
-                return 
-      else 
-        TriggerClientEvent("xC_KillFeed",v,'LOL', GetPlayerName(source), 'nil', true, "pvp")
-      end
-        end
-    end
 end)
 
 RegisterServerEvent("Warzone:SetW")
@@ -222,7 +204,7 @@ AddEventHandler("WarZone:OnPlayerChange",function(exit)
                     local Name = GetPlayerName(v)
                     TriggerClientEvent('chat:addMessage',  xPlayer.source, {
                     template = '<div style="padding: 1vw;background: linear-gradient(-90deg,#0060ff, #0000ff);border-radius: 20px;box-shadow: 0 0 10px #0060ff;max-width: 730px;"><span style="display:block; margin-bottom:20px"><span style="padding:7px;border-radius:10px;"><i class="fa fa-bullhorn"></i></span> <b>WarZone</b></span>{0}</div>',
-                    args = { "WarZone Tamam Shod Va ^4"..Name.."^0 Barande Shod" }
+                    args = { "WarZone It Was Over And ^4"..Name.."^0 Winner" }
                 }) 
                 end 
             end 

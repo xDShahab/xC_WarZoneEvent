@@ -9,9 +9,9 @@ description 'WarZone Event For Fivem - ESX'
 server_script '@oxmysql/lib/MySQL.lua'
 
 server_scripts {
-    'server/main.lua', 
+    'server/*.lua', 
 }
 
 client_scripts {
-    'client/main.lua',
+    'client/*.lua',
 }

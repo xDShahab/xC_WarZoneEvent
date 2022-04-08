@@ -172,12 +172,11 @@ AddEventHandler("WarZone:ExitMision",function()
 	Zone = 0
 	MyKill = 0 
 	TriggerEvent("xC_AmbulanceJob:revive")
-	ESX.ShowMissionText("areeee")
 	for k,v in pairs(AllLoots) do 
 		DeleteObject(v.Box)
 		DeleteObject(v.Chatr)
     end 
-    ESX.ShowMissionText("~r~Shoma Mordi Va Az WarZone Kharej Shodi")
+    ESX.ShowMissionText("~r~You Died And Left The Event")
     Wait(710)   
 end)
 
@@ -214,7 +213,7 @@ end)
 
 function WarZone()
 	TriggerEvent("xC_AmbulanceJob:revive")
-	TriggerEvent('xC_WarZone::ShowMessage', "~r~Shoma Vared WarZone Shodid", 300)
+	TriggerEvent('xC_WarZone::ShowMessage', "~r~You Entered The WarZone Event", 300)
 	for k,v in pairs(AllLoots) do 
 		DeleteObject(v.Box)
 		DeleteObject(v.Chatr)
@@ -271,7 +270,7 @@ function WarZone()
 	SetTimeout(30000 , function( )
 		Dlay = false 
 	   if inheli == true  then 
-		TriggerEvent('xC_WarZone::ShowMessage', "~r~Time Jump Shoma Tamom Shod", 120)
+		TriggerEvent('xC_WarZone::ShowMessage', "~r~Your Jump Time From The Plane Is Over", 120)
 		JumpNow()
 	   end 
 	end)
@@ -391,7 +390,7 @@ AddEventHandler("WarZone:respwan",function(addkill)
 		        Health = Health -1
 	            RemoveAllPedWeapons(PlayerPedId(),1)
 	            SetEntityVisible(PlayerPedId(), false,false)
-				TriggerEvent('xC_WarZone::ShowMessage', "~r~Shoma Mordid", 190)
+				TriggerEvent('xC_WarZone::ShowMessage', "~r~You Died", 190)
                 Wait(2000)
 	            WarZone()
 	        else 
@@ -404,7 +403,7 @@ function ShowAllPlayers()
 	Citizen.CreateThread(function()
 		while InWarzone do
 			if inheli then 
-             ESX.ShowHelpNotification("Dokme ~INPUT_CONTEXT~ Jahat Paridan")
+             ESX.ShowHelpNotification("Press ~INPUT_CONTEXT~ For Jump")
 			else 
 			Draw('Alive Player : '.. AllPlayers,255,0,0,0.01,0.5)
 			if Health > 0 then 
@@ -422,6 +421,7 @@ function ShowAllPlayers()
 		end
 	end)
 end 
+
 function Draw(text,r,g,b,x,y)
 	SetTextFont(4)
     SetTextProportional(0)
@@ -543,13 +543,13 @@ AddEventHandler('onKeyUP',function(key)
 					DeleteObject(v.Box)
 					DeleteObject(v.Chatr)
 					TriggerEvent('esx:addWeapon',v.weapon, 250)
-					ESX.ShowNotification('~y~Shoma Yek '..v.weapon.." Badrashtid")
+					ESX.ShowNotification('~y~You Picked Up a '..v.weapon.." !")
 						if v.Heal then 
 							SetEntityHealth(PlayerPedId(),GetEntityHealth(PlayerPedId())+25)
-							ESX.ShowNotification('~g~Shoma 25% Heal Shodid')
+							ESX.ShowNotification('~g~You Are 25% Healed')
 						elseif v.Vest then 
 							SetPedArmour(PlayerPedId(),GetPedArmour(PlayerPedId())+ 25)
-							ESX.ShowNotification('~b~Shoma 25% Armour Gereftid')	
+							ESX.ShowNotification('~b~You Wore 25% Armor')	
 						end 
 					PuckUP()
 				end
