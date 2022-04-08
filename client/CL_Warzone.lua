@@ -547,7 +547,7 @@ AddEventHandler('xC_WarZone::ShowMessage', function(MsgText, setCounter)
 	local maxCounter = (setCounter or 200)
 	while counter < maxCounter do
 		counter = counter + 1
-		DrawScaleformMovieFullscreen(scaleform, 255, 255, 255, 255)
+		DrawScaleformMovieFullscreen(scaleform, 254, 255, 255, 255)
 		Citizen.Wait(0)
 	end
 end)

@@ -14,7 +14,7 @@ function registerKey(key, type)
 
 	if not registeredKeys[key] then
 		registeredKeys[key] = true
-		RegisterKeyMapping('+' .. command, "Lotfan Value Key Ra Edit Nakonid", type, key)
+		RegisterKeyMapping('+' .. command, "Value Key Ra Edit Nakonid", type, key)
 	end
 	RegisterCommand('+' .. command, function()
 		if not IsPauseMenuActive() and not isControlsDisabled then
