@@ -17,6 +17,59 @@ local WarZone = {
     Time = 0,
 }
 
+AddEventHandler('playerDropped', function ()
+    if WarZone.Start ~= true  and GetPlayerRoutingBucket(source) == WarZoneWorld  then 
+        TriggerClientEvent("WarZone:DC",source)
+    end     
+end)
+
+
+function WarZone_()
+    if WarZone.Start ~= true then 
+        return   
+    end 
+    local xPlayers = ESX.GetPlayers()
+    for k, v in pairs (xPlayers) do 
+        if GetPlayerRoutingBucket(v) == WorldLob then
+            TriggerClientEvent("WarZone:StartMision",v,WarZone.Start,WarZone.Health,WarZone.Distance,WarZone.Coords ,WarZone.Time)
+        end 
+    end    
+end 
+
+
+RegisterServerEvent("Warzone:Set")
+AddEventHandler("Warzone:Set", function(Wz)
+    if WarZone.Start == true and  Lobbey == false  or  WarZone.Start == false   and   Lobbey == true  then  
+        SetPlayerRoutingBucket(source,Wz)
+    end 
+end)
+
+RegisterNetEvent("WarZone:OnPlayerChange")
+AddEventHandler("WarZone:OnPlayerChange",function(exit)
+    if exit then 
+    AllPlayerInWz = AllPlayerInWz -1 
+    else 
+        AllPlayerInWz = AllPlayerInWz + 1 
+    end 
+        TriggerClientEvent("WarZone:UpdateMembers",-1,AllPlayerInWz) 
+        if  WarZone.Start == true and  Lobbey == false  then 
+            if   AllPlayerInWz == 1  then 
+            local xPlayers = ESX.GetPlayers()
+            for k, v in pairs (xPlayers) do 
+                if GetPlayerRoutingBucket(v) == WarZoneWorld then
+                    local Name = GetPlayerName(v)
+                    TriggerClientEvent('chat:addMessage',  xPlayer.source, {
+                    template = '<div style="padding: 1vw;background: linear-gradient(-90deg,#0060ff, #0000ff);border-radius: 20px;box-shadow: 0 0 10px #0060ff;max-width: 730px;"><span style="display:block; margin-bottom:20px"><span style="padding:7px;border-radius:10px;"><i class="fa fa-bullhorn"></i></span> <b>WarZone</b></span>{0}</div>',
+                    args = { "WarZone It Was Over And ^4"..Name.."^0 Winner" }
+                }) 
+                end 
+            end 
+        end
+    end 
+end)
+
+-- Commands
+
 RegisterCommand("swarzone",function(source,args)
     local xPlayer = ESX.GetPlayerFromId(source)
     if WarZone.Start == true then return
@@ -160,54 +213,5 @@ RegisterCommand("exitwz",function(source,args)
     if GetPlayerRoutingBucket(source) == 90 then 
         TriggerClientEvent("WarZone:ExitMision",source)
         TriggerClientEvent('esx:showNotification', source, '~g~You Exited From WarZone Event')
-    end 
-end)
-
-function WarZone_()
-    if WarZone.Start ~= true then 
-        return   
-    end 
-    local xPlayers = ESX.GetPlayers()
-    for k, v in pairs (xPlayers) do 
-        if GetPlayerRoutingBucket(v) == WorldLob then
-            TriggerClientEvent("WarZone:StartMision",v,WarZone.Start,WarZone.Health,WarZone.Distance,WarZone.Coords ,WarZone.Time)
-        end 
-    end    
-end 
-
-AddEventHandler('playerDropped', function ()
-    if WarZone.Start ~= true  and GetPlayerRoutingBucket(source) == WarZoneWorld  then 
-        TriggerClientEvent("WarZone:DC",source)
-    end     
-end)
-
-RegisterServerEvent("Warzone:SetW")
-AddEventHandler("Warzone:SetW", function(Wz)
-    if WarZone.Start == true and  Lobbey == false  or  WarZone.Start == false   and   Lobbey == true  then  
-        SetPlayerRoutingBucket(source,Wz)
-    end 
-end)
-
-RegisterNetEvent("WarZone:OnPlayerChange")
-AddEventHandler("WarZone:OnPlayerChange",function(exit)
-    if exit then 
-    AllPlayerInWz = AllPlayerInWz -1 
-    else 
-        AllPlayerInWz = AllPlayerInWz + 1 
-    end 
-        TriggerClientEvent("WarZone:UpdateMembers",-1,AllPlayerInWz) 
-        if  WarZone.Start == true and  Lobbey == false  then 
-            if   AllPlayerInWz == 1  then 
-            local xPlayers = ESX.GetPlayers()
-            for k, v in pairs (xPlayers) do 
-                if GetPlayerRoutingBucket(v) == WarZoneWorld then
-                    local Name = GetPlayerName(v)
-                    TriggerClientEvent('chat:addMessage',  xPlayer.source, {
-                    template = '<div style="padding: 1vw;background: linear-gradient(-90deg,#0060ff, #0000ff);border-radius: 20px;box-shadow: 0 0 10px #0060ff;max-width: 730px;"><span style="display:block; margin-bottom:20px"><span style="padding:7px;border-radius:10px;"><i class="fa fa-bullhorn"></i></span> <b>WarZone</b></span>{0}</div>',
-                    args = { "WarZone It Was Over And ^4"..Name.."^0 Winner" }
-                }) 
-                end 
-            end 
-        end
     end 
 end)

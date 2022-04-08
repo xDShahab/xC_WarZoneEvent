@@ -6,6 +6,33 @@ Citizen.CreateThread(function()
 	end
 end)
 
+RegisterNetEvent("WarZone:UpdateMembers")
+AddEventHandler("WarZone:UpdateMembers",function(ShahabxD)
+	AllPlayers =  ShahabxD 
+end)
+
+local AllLoots = {}
+local LastCoord = vector3(216.14, -816.73, 30.64)
+local GCoord = vector3(216.14, -816.73, 30.64)
+local Health = 0 
+local Distance = 0.0 
+local Zone = 0 
+local InHeli,Jump,InWarzone , PlayerDead = false,false,false , false
+local Dlay = false 
+local Plane , Pilot  = nil , nil  
+local PedID = PlayerPedId()
+local Time = 0 
+local MyKill = 0 
+local StartWarZone = false 
+local AllPlayers = 0
+local InLobby = false 
+local NZone = 0
+local ObjectLootBox = nil 
+local parachute = nil 
+local inmatch = false 
+local LootNow = false
+local VehicleModel = GetHashKey('titan')
+
 local weapons = {
 	'WEAPON_DAGGER',
 	'WEAPON_BAT',
@@ -84,47 +111,25 @@ local weapons = {
 	'WEAPON_MARKSMANRIFLE_MK2'
 }
 
-local LastCoord = vector3(216.14, -816.73, 30.64)
-local Health = 0 
-local Distance = 0.0 
-local Zone = 0 
-local GlobalCoord = vector3(216.14, -816.73, 30.64)
-local inheli,jump,InWarzone , PlayerDead = false,false,false , false
-local Dlay = false 
-local model = GetHashKey('titan')
-local plane , pilot  = nil , nil  
-local ped = PlayerPedId()
-local Time = 0 
-local MyKill = 0 
-local startWZ = false 
-local AllPlayers = 0
-local inLobby = false 
-local NZone = 0
-local objLootBox = nil 
-local AllLoots = {}
-local parachute = nil 
-local inmatch = false 
-local LootNow = false
-
 RegisterNetEvent("WarZone:StartMision")
 AddEventHandler("WarZone:StartMision",function(start,Body,dis,Coord , Time)
 	AllLoots = {}
 	SetPedArmour(PlayerPedId(),0)
 	TriggerEvent('es_admin:freezePlayer', false)
-	inLobby = false 
+	InLobby = false 
 	Wait(10)
 	inmatch = true 
-	startWZ = true 
+	StartWarZone = true 
 	Health = Body 
 	Distance = dis
 	Zone = dis
-	GlobalCoord = Coord
+	GCoord = Coord
 	Time = Time
 	InWarzone = true 
 	NZone = dis / 2 + 0.0
-	TriggerServerEvent("Warzone:SetW",90)
+	TriggerServerEvent("Warzone:Set",90)
 	Wait(500)
-	RequestCollisionAtCoord(GlobalCoord.x, GlobalCoord.y, GlobalCoord.z)
+	RequestCollisionAtCoord(GCoord.x, GCoord.y, GCoord.z)
 	Zone_WZ()
 	WarZone()
 	
@@ -134,26 +139,25 @@ end)
 
 RegisterNetEvent("WarZone:ExitMision")
 AddEventHandler("WarZone:ExitMision",function()
-	TriggerServerEvent("Warzone:SetW",0)
+	TriggerServerEvent("Warzone:Set",0)
 	InWarzone = false 
-	inLobby = false 
+	InLobby = false 
 	LootNow = false
 	inmatch = false 
-	local ped = GetPlayerPed(-1)
+	local PedID = GetPlayerPed(-1)
 	TriggerServerEvent("WarZone:OnPlayerChange",true)
-	DeleteVehicle(plane)
-	DeleteEntity(pilot)
-	startWZ = false 
+	DeleteVehicle(Plane)
+	DeleteEntity(Pilot)
+	StartWarZone = false 
 	SetEntityVisible(GetPlayerPed(-1), true,true)
 	FreezeEntityPosition(GetPlayerPed(-1),false)
     DetachEntity(PlayerPedId(), true, true)
     SetEntityCollision(GetPlayerPed(-1), true, true)
 	RemoveZone()
 	RequestCollisionAtCoord(LastCoord.x, LastCoord.y, LastCoord.z)
-	SetEntityVisible(ped, false,false)
-	TriggerEvent("xC_AmbulanceJob:revive")
+	SetEntityVisible(PedID, false,false)
+	TriggerEvent("esx_ambulancejob:revive")
 	Wait(3000)
-	ESX.ShowMissionText("")
 	RemoveAllPedWeapons(PlayerPedId(),1)
 	Wait(100)
 	LoadWeapon()
@@ -165,13 +169,13 @@ AddEventHandler("WarZone:ExitMision",function()
     LastCoord = vector3(216.14, -816.73, 30.64)
     Health = 0 
     Distance = 0.0 
-    GlobalCoord = vector3(216.14, -816.73, 30.64)
-    inheli,jump,InWarzone , PlayerDead = false,false,false , false
-    model = GetHashKey('titan')
-    plane , pilot  = nil , nil  
+    GCoord = vector3(216.14, -816.73, 30.64)
+    InHeli,Jump,InWarzone , PlayerDead = false,false,false , false
+    VehicleModel = GetHashKey('titan')
+    Plane , Pilot  = nil , nil  
 	Zone = 0
 	MyKill = 0 
-	TriggerEvent("xC_AmbulanceJob:revive")
+	TriggerEvent("esx_ambulancejob:revive")
 	for k,v in pairs(AllLoots) do 
 		DeleteObject(v.Box)
 		DeleteObject(v.Chatr)
@@ -184,7 +188,7 @@ RegisterNetEvent("WarZone:DC")
 AddEventHandler("WarZone:DC",function()
 	RemoveAllPedWeapons(PlayerPedId(),1)
 	LoadWeapon()
-	inLobby  = false 
+	InLobby  = false 
 	AllLoots = {}
 end)
 
@@ -197,22 +201,22 @@ AddEventHandler("WarZone:JoinLobbery",function()
 	TriggerServerEvent("WarZone:OnPlayerChange",false)
 	ESX.UI.Menu.CloseAll()
 	ClearPedBloodDamage(GetPlayerPed(-1))
-	inLobby = true 
+	InLobby = true 
 	SetEntityCoords(GetPlayerPed(-1),vector3(-2131.17,3262.66,34.81))
 	Wait(50)
 	TriggerEvent('es_admin:freezePlayer', true)
 	Wait(3000)
 	RemoveAllPedWeapons(PlayerPedId(),1)
 	TriggerEvent('es_admin:freezePlayer', false)
-	TriggerEvent('xC_Status:setss', 'hunger', 1000000)
-	TriggerEvent('xC_Status:setss', 'thirst', 1000000)	
-	TriggerEvent("xC_AmbulanceJob:revive")
+	TriggerEvent('esx_status:setss', 'hunger', 1000000)
+	TriggerEvent('esx_status:setss', 'thirst', 1000000)	
+	TriggerEvent("esx_ambulancejob:revive")
 	SetEntityHealth(PlayerPedId(), GetEntityMaxHealth(PlayerPedId()))
 	ShowAllPlayers()
 end) 
 
 function WarZone()
-	TriggerEvent("xC_AmbulanceJob:revive")
+	TriggerEvent("esx_ambulancejob:revive")
 	TriggerEvent('xC_WarZone::ShowMessage', "~r~You Entered The WarZone Event", 300)
 	for k,v in pairs(AllLoots) do 
 		DeleteObject(v.Box)
@@ -222,54 +226,54 @@ function WarZone()
 	AllLoots = {}
 	Dlay = true 
 	LootNow = false
-    RequestModel(model)
-    while not HasModelLoaded(model) do
+    RequestModel(VehicleModel)
+    while not HasModelLoaded(VehicleModel) do
 		Wait(1)
 	end
 
-    DeleteVehicle(plane)
+    DeleteVehicle(Plane)
     Wait(710)
-	plane = CreateVehicle(model,GlobalCoord.x, GlobalCoord.y - Zone, GlobalCoord.z + Zone, 10, false, true)
-	while not HasModelLoaded(model) do
+	Plane = CreateVehicle(VehicleModel,GCoord.x, GCoord.y - Zone, GCoord.z + Zone, 10, false, true)
+	while not HasModelLoaded(VehicleModel) do
 		Wait(1)
 	end
-	while not DoesEntityExist(plane) do
-		plane = CreateVehicle(model,GlobalCoord.x, GlobalCoord.y - Zone, GlobalCoord.z + Zone, 10, false, true)
+	while not DoesEntityExist(Plane) do
+		Plane = CreateVehicle(VehicleModel,GCoord.x, GCoord.y - Zone, GCoord.z + Zone, 10, false, true)
 		Wait(0)
 	end 
 	Wait(710)
-	jump =  false 
+	Jump =  false 
 	SetEntityHealth(PlayerPedId(), GetEntityMaxHealth(PlayerPedId()))
 	RemoveAllPedWeapons(PlayerPedId(),1)
 	SetEntityVisible(GetPlayerPed(-1), false,false)
-	SetEntityDynamic(plane, true)
-	ActivatePhysics(plane)
-	SetVehicleForwardSpeed(plane, 100.0)
-	SetHeliBladesFullSpeed(plane)
-	SetVehicleEngineOn(plane, true, true, false)
-	ControlLandingGear(plane, 1)
-	OpenBombBayDoors(plane)
-	SetEntityProofs(plane, true, false, true, false, false, false, false, false)
-	pilot = CreatePedInsideVehicle(plane, 1, GetHashKey("mp_m_freemode_01"), -1, false, true)
-	SetBlockingOfNonTemporaryEvents(pilot, true)
-	SetPedKeepTask(pilot, true)
-	SetPlaneMinHeightAboveTerrain(plane, 50)
-	TaskVehicleDriveToCoord(pilot, plane,GlobalCoord.x, GlobalCoord.y + Zone, GlobalCoord.z+ Zone, 30.0, 30.0, model, 16777216, 1.0, 1)
+	SetEntityDynamic(Plane, true)
+	ActivatePhysics(Plane)
+	SetVehicleForwardSpeed(Plane, 100.0)
+	SetHeliBladesFullSpeed(Plane)
+	SetVehicleEngineOn(Plane, true, true, false)
+	ControlLandingGear(Plane, 1)
+	OpenBombBayDoors(Plane)
+	SetEntityProofs(Plane, true, false, true, false, false, false, false, false)
+	Pilot = CreatePedInsideVehicle(Plane, 1, GetHashKey("mp_m_freemode_01"), -1, false, true)
+	SetBlockingOfNonTemporaryEvents(Pilot, true)
+	SetPedKeepTask(Pilot, true)
+	SetPlaneMinHeightAboveTerrain(Plane, 50)
+	TaskVehicleDriveToCoord(Pilot, Plane,GCoord.x, GCoord.y + Zone, GCoord.z+ Zone, 30.0, 30.0, VehicleModel, 16777216, 1.0, 1)
 	ClearPedTasksImmediately(PlayerPedId())
 	FreezeEntityPosition(GetPlayerPed(-1),true)
 	ClearPedTasksImmediately(PlayerPedId())
 	SetPedArmour(PlayerPedId(),0)
 	SetEntityCollision(GetPlayerPed(-1), false, false)
-	AttachEntityToEntity(GetPlayerPed(-1), plane, 0, 5, 0, 7.0, 0, 0, 0, true, true, false, true, 0, false)	
+	AttachEntityToEntity(GetPlayerPed(-1), Plane, 0, 5, 0, 7.0, 0, 0, 0, true, true, false, true, 0, false)	
 	while not IsEntityAttached(PlayerPedId()) do
 		Wait(0)
-		AttachEntityToEntity(GetPlayerPed(-1), plane, 0, 5, 0, 7.0, 0, 0, 0, true, true, false, true, 0, false)	
+		AttachEntityToEntity(GetPlayerPed(-1), Plane, 0, 5, 0, 7.0, 0, 0, 0, true, true, false, true, 0, false)	
 	end
 	Wait(7000)
-	inheli = true 
+	InHeli = true 
 	SetTimeout(30000 , function( )
 		Dlay = false 
-	   if inheli == true  then 
+	   if InHeli == true  then 
 		TriggerEvent('xC_WarZone::ShowMessage', "~r~Your Jump Time From The Plane Is Over", 120)
 		JumpNow()
 	   end 
@@ -277,9 +281,9 @@ function WarZone()
 end 
 
 function JumpNow()
-	inheli = false
-	jump = true
-	local ped = GetPlayerPed(-1)
+	InHeli = false
+	Jump = true
+	local PedID = GetPlayerPed(-1)
 	SetEntityVisible(GetPlayerPed(-1), true,true)
 	FreezeEntityPosition(GetPlayerPed(-1),false)
 	GiveDelayedWeaponToPed(PlayerPedId(),0xFBAB5776, 1, 0)
@@ -291,11 +295,11 @@ function JumpNow()
 	TriggerEvent('xcontrol',false)
 	Wait(5000)
 	TriggerEvent('xcontrol',true)
-	DeleteVehicle(plane)
-	DeleteEntity(pilot)
+	DeleteVehicle(Plane)
+	DeleteEntity(Pilot)
 	SetEntityVisible(GetPlayerPed(-1), true,true)
 	Wait(1000)
-	plane , pilot  = nil , nil
+	Plane , Pilot  = nil , nil
 	Wait(5000)
 	LootNow = true 
 	StartDrop()
@@ -303,10 +307,10 @@ end
 
 AddEventHandler('onKeyUP',function(key)
 	if key == "e" then
-		if inheli == true  then 
+		if InHeli == true  then 
 			PlayerDead = false 
-			inheli = false
-			jump = true
+			InHeli = false
+			Jump = true
 			JumpNow()
 		end
 	end
@@ -334,11 +338,11 @@ Citizen.CreateThread(function()
 	while InWarzone == true  do
 		Wait(3000)
 		
-	    if GetDistanceBetweenCoords(GetEntityCoords(GetPlayerPed(-1)),GlobalCoord,false) > Distance   then 	
-	        if PlayerDead == false and inheli == false and Dlay == false  then  
+	    if GetDistanceBetweenCoords(GetEntityCoords(GetPlayerPed(-1)),GCoord,false) > Distance   then 	
+	        if PlayerDead == false and InHeli == false and Dlay == false  then  
 	            SetEntityHealth(PlayerPedId(),GetEntityHealth(PlayerPedId())- 5 )
 	            TriggerEvent('xC_WarZone::ShowMessage', "~r~Out Of Zone", 120)
-	            jump = false 
+	            Jump = false 
 	        end
         else 
 	        Wait(1000)
@@ -347,12 +351,8 @@ Citizen.CreateThread(function()
   end)
 end
 
-function RemoveZone()
-	exports.xC_Main:RemoveByTag("WzAreaZone")
-end 
-
 function ZoneRuning()
-	if startWZ  == false then return end 
+	if StartWarZone  == false then return end 
 	    local ZoneRun = true  
 	    SoundZoneMoved()
 	    TriggerEvent('xC_WarZone::ShowMessage', "~r~Zone Moved", 120)
@@ -382,8 +382,8 @@ function SoundZoneMoved()
     end)
 end 
 
-RegisterNetEvent("WarZone:respwan")
-AddEventHandler("WarZone:respwan",function(addkill)
+RegisterNetEvent("WarZone:RespwanPlayer")
+AddEventHandler("WarZone:RespwanPlayer",function(addkill)
 	if addkill then MyKill = MyKill + 1 return end 
         if InWarzone then 
 	        if Health > 0 then 
@@ -397,48 +397,6 @@ AddEventHandler("WarZone:respwan",function(addkill)
                 TriggerEvent("WarZone:ExitMision")
 	    end
     end 
-end)
-
-function ShowAllPlayers()
-	Citizen.CreateThread(function()
-		while InWarzone do
-			if inheli then 
-             ESX.ShowHelpNotification("Press ~INPUT_CONTEXT~ For Jump")
-			else 
-			Draw('Alive Player : '.. AllPlayers,255,0,0,0.01,0.5)
-			if Health > 0 then 
-			Draw('Blood : '.. Health,255,0,0,0.01,0.45)
-			end 
-			if MyKill > 0 then 
-			Draw('Kill : '.. MyKill,255,0,0,0.01,0.4)
-			end 
-		end
-			if inmatch   then 
-				DrawMarker(28, GlobalCoord, 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, Distance + 0.0, Distance +0.0, Distance +0.0, 255, 128, 0, 50, false, true, 2, nil, nil, false)
-            end 
-		
-			Wait(5)
-		end
-	end)
-end 
-
-function Draw(text,r,g,b,x,y)
-	SetTextFont(4)
-    SetTextProportional(0)
-    SetTextScale(0.50, 0.50)
-	SetTextColour( r,g,b, 255 )
-    SetTextDropShadow(0, 0, 0, 0,255)
-    SetTextEdge(1, 0, 0, 0, 255)
-    SetTextDropShadow()
-	SetTextOutline()
-    SetTextEntry("STRING")
-    AddTextComponentString(text)
-    DrawText(x, y)
-end
-
-RegisterNetEvent("WarZone:UpdateMembers")
-AddEventHandler("WarZone:UpdateMembers",function(ShahabxD)
-	AllPlayers =  ShahabxD 
 end)
 
 local  requiredModels = {"p_cargo_chute_s","ex_prop_adv_case_sm","prop_box_ammo03a"}
@@ -514,24 +472,24 @@ Citizen.CreateThread(function()
 	end 
 	local crateSpawn = vector3(MyCoord.x + math.random(1,200) * others + 0.0, MyCoord.y + math.random(1,200) * others + 0.0, 50 + 0.0) 
     local crateSpawn = vector3(MyCoord.x, MyCoord.y , 50 + 0.0) 
-	local objLootBox = CreateObject(GetHashKey("prop_box_ammo03a"), crateSpawn, true, true, true) 
-    SetEntityLodDist(objLootBox, 2000) 
-    ActivatePhysics(objLootBox)
-    SetDamping(objLootBox, 2, 0.1) 
-    SetEntityVelocity(objLootBox, 0.0, 0.0, -0.2)
+	local ObjectLootBox = CreateObject(GetHashKey("prop_box_ammo03a"), crateSpawn, true, true, true) 
+    SetEntityLodDist(ObjectLootBox, 2000) 
+    ActivatePhysics(ObjectLootBox)
+    SetDamping(ObjectLootBox, 2, 0.1) 
+    SetEntityVelocity(ObjectLootBox, 0.0, 0.0, -0.2)
 	local parachute = CreateObject(GetHashKey("p_cargo_chute_s"), crateSpawn, true, true, true) 
     SetEntityLodDist(parachute, 2000)
     SetEntityVelocity(parachute, 0.0, 0.0, -0.2)
-	AttachEntityToEntity(parachute, objLootBox, 0, 0.0, 0.0, 0.3, 0.0, 0.0, 0.0, false, false, true, false, 2, true) 
-	table.insert(AllLoots,{Box = objLootBox ,  Chatr = parachute , weapon = WeaponForThisLoot , Heal = heal , Vest = vest })
+	AttachEntityToEntity(parachute, ObjectLootBox, 0, 0.0, 0.0, 0.3, 0.0, 0.0, 0.0, false, false, true, false, 2, true) 
+	table.insert(AllLoots,{Box = ObjectLootBox ,  Chatr = parachute , weapon = WeaponForThisLoot , Heal = heal , Vest = vest })
 	Wait(50000)
 	while not IsEntityAttached(parachute) do
 		Wait(0)
-		AttachEntityToEntity(parachute, objLootBox, 0, 5, 0, 7.0, 0, 0, 0, true, true, false, true, 0, false)	
+		AttachEntityToEntity(parachute, ObjectLootBox, 0, 5, 0, 7.0, 0, 0, 0, true, true, false, true, 0, false)	
 	end
 	Wait(30000)
-	PlaceObjectOnGroundProperly(objLootBox)
-	FreezeEntityPosition(objLootBox,true)
+	PlaceObjectOnGroundProperly(ObjectLootBox)
+	FreezeEntityPosition(ObjectLootBox,true)
 	end)
 end 
 
@@ -593,3 +551,40 @@ AddEventHandler('xC_WarZone::ShowMessage', function(MsgText, setCounter)
 		Citizen.Wait(0)
 	end
 end)
+
+function ShowAllPlayers()
+	Citizen.CreateThread(function()
+		while InWarzone do
+			if InHeli then 
+             ESX.ShowHelpNotification("Press ~INPUT_CONTEXT~ For Jump")
+			else 
+			Draw('Alive Player : '.. AllPlayers,255,0,0,0.01,0.5)
+			if Health > 0 then 
+			Draw('Blood : '.. Health,255,0,0,0.01,0.45)
+			end 
+			if MyKill > 0 then 
+			Draw('Kill : '.. MyKill,255,0,0,0.01,0.4)
+			end 
+		end
+			if inmatch   then 
+				DrawMarker(28, GCoord, 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, Distance + 0.0, Distance +0.0, Distance +0.0, 255, 128, 0, 50, false, true, 2, nil, nil, false)
+            end 
+		
+			Wait(5)
+		end
+	end)
+end 
+
+function Draw(text,r,g,b,x,y)
+	SetTextFont(4)
+    SetTextProportional(0)
+    SetTextScale(0.50, 0.50)
+	SetTextColour( r,g,b, 255 )
+    SetTextDropShadow(0, 0, 0, 0,255)
+    SetTextEdge(1, 0, 0, 0, 255)
+    SetTextDropShadow()
+	SetTextOutline()
+    SetTextEntry("STRING")
+    AddTextComponentString(text)
+    DrawText(x, y)
+end
